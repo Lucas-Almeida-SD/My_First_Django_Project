@@ -15,4 +15,18 @@ def get_all_users(request: Request):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    if request.method == "POST":
+        new_user = request.data
+
+        serializer = UserSerializer(data=new_user)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(
+                data=serializer.data, status=status.HTTP_201_CREATED
+            )
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
     return Response(status=status.HTTP_400_BAD_REQUEST)
