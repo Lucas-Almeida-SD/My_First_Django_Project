@@ -34,18 +34,24 @@ def create_user(request: Request):
 
 
 @api_view(["PUT"])
-def update_user(request, id):
+def get_user_by_id(request: Request, id):
     try:
-        find_user = User.objects.get(pk=id)
-    except Exception:
-        Response(status=status.HTTP_404_NOT_FOUND)
+        user = User.objects.get(pk=id)
+    except User.DoesNotExist:
+        return Response(
+            data={"message": "Usuário não encontrado"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
 
-    update = request.data
-    serializer = UserSerializer(find_user, data=update)
+    if request.method == "PUT":
+        serializer = UserSerializer(user, data=request.data)
 
-    if serializer.is_valid():
-        serializer.save()
+        if serializer.is_valid():
+            serializer.save()
 
-        return Response(serializer.data)
+            return Response(serializer.data)
 
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            data={"message": serializer.errors},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
