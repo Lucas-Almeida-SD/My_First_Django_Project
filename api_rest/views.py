@@ -33,7 +33,7 @@ def create_user(request: Request):
     )
 
 
-@api_view(["PUT"])
+@api_view(["GET", "PUT"])
 def get_user_by_id(request: Request, id):
     try:
         user = User.objects.get(pk=id)
@@ -42,6 +42,10 @@ def get_user_by_id(request: Request, id):
             data={"message": "Usuário não encontrado"},
             status=status.HTTP_404_NOT_FOUND,
         )
+
+    if request.method == "GET":
+        serializer = UserSerializer(user)
+        return Response(data=serializer.data)
 
     if request.method == "PUT":
         serializer = UserSerializer(user, data=request.data)
