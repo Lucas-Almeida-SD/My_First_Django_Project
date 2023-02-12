@@ -30,3 +30,24 @@ def get_all_users(request: Request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["PUT"])
+def update_user(request, id):
+    if request.method == "PUT":
+        try:
+            find_user = User.objects.get(pk=id)
+        except Exception:
+            Response(status=status.HTTP_404_NOT_FOUND)
+
+        update = request.data
+        serializer = UserSerializer(find_user, data=update)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data)
+
+        return Response(status=status.HTTP_400)
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
