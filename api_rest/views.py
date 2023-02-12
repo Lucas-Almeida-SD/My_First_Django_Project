@@ -33,7 +33,7 @@ def create_user(request: Request):
     )
 
 
-@api_view(["GET", "PUT"])
+@api_view(["GET", "PUT", "DELETE"])
 def get_user_by_id(request: Request, id):
     try:
         user = User.objects.get(pk=id)
@@ -47,7 +47,7 @@ def get_user_by_id(request: Request, id):
         serializer = UserSerializer(user)
         return Response(data=serializer.data)
 
-    if request.method == "PUT":
+    elif request.method == "PUT":
         serializer = UserSerializer(user, data=request.data)
 
         if serializer.is_valid():
@@ -59,3 +59,8 @@ def get_user_by_id(request: Request, id):
             data={"message": serializer.errors},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    elif request.method == "DELETE":
+        user.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
